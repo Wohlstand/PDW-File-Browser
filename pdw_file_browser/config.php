@@ -28,7 +28,7 @@ THE SOFTWARE.
 error_reporting(0);
 ini_set('display_errors', '0');
 
-if(!isset($_SESSION)){ session_start();}  
+if(!isset($_SESSION)){ session_start();}
 
 
 
@@ -42,9 +42,9 @@ if(!isset($_SESSION)){ session_start();}
 
 
 /**
- * WARNING: You should do your authorization checking right here. config.php is included 
- * in every file so checking it here is securing the whole plug-in. By not checking for 
- * authorization you are allowing "anyone" to upload and list the files in your server. 
+ * WARNING: You should do your authorization checking right here. config.php is included
+ * in every file so checking it here is securing the whole plug-in. By not checking for
+ * authorization you are allowing "anyone" to upload and list the files in your server.
  * You must implement some kind of session validation here. You could do something like...
  *
  * if (!(isset($_SESSION['IsAuthorized']) && $_SESSION['IsAuthorized'])){
@@ -59,10 +59,10 @@ if (!(isset($_SESSION['AdminLoginData']['session']) && $_SESSION['AdminLoginData
 
 /*
  * UPLOAD PATH
- * 
+ *
  * absolute path from root to upload folder (DON'T FORGET SLASHES)
  *
- * Example 
+ * Example
  * ---------------------------------------
  * http://www.domain.com/images/upload/
  * $uploadpath = '/images/upload/';
@@ -75,9 +75,9 @@ $uploadpath = substr($url['path'], 0, $pos) . "files/";
 
 /*
  * DEFAULT TIMEZONE
- * 
- * If you use PHP 5 then set default timezone to avoid any date errors. 
- * 
+ *
+ * If you use PHP 5 then set default timezone to avoid any date errors.
+ *
  * Select the timezone you are in.
  *
  * Timezones to select from are http://nl3.php.net/manual/en/timezones.php
@@ -97,7 +97,7 @@ $viewLayout = 'tiles';
 
 /*
  * DEFAULT LANGUAGE
- * 
+ *
  * Set default language to load when &language=? is not included in url
  *
  * See lang directory for included languages. For now your options are 'en' and 'nl'
@@ -109,10 +109,10 @@ $defaultLanguage = 'en';
 
 /*
  * ALLOWED ACTIONS
- * 
+ *
  * Set an action to FALSE to prevent execution.
  * Buttons will be removed from UI when an action is set to FALSE.
- * 
+ *
  */
 $allowedActions = array(
     'upload' => TRUE,
@@ -122,7 +122,7 @@ $allowedActions = array(
 	'rename' => TRUE,
 	'delete' => TRUE,
 	'create_folder' => TRUE
-); 
+);
 
 /*
  * PDW File Browser depends on $_SERVER['DOCUMENT_ROOT'] to resolve path/filenames. This value is usually
@@ -138,7 +138,7 @@ define('DOCUMENTROOT', realpath((getenv('DOCUMENT_ROOT') && preg_match('#^'.preg
 
 /*
  * CUSTOM FILTERS
- * 
+ *
  * If you like to use custom filters then remove "//" to add your own filters.
  * "name of filter" => ".extension1|.extension2"
  */
@@ -149,7 +149,7 @@ define('DOCUMENTROOT', realpath((getenv('DOCUMENT_ROOT') && preg_match('#^'.preg
 
 /*
  * DEFAULT SKIN
- * 
+ *
  * Take a look inside the /skin/ folder to see which skins are available. If you leave the "//"
  * then redmond (Windows 7 like) will be the default theme.
  */
@@ -159,7 +159,7 @@ define('DOCUMENTROOT', realpath((getenv('DOCUMENT_ROOT') && preg_match('#^'.preg
 
 /*
  * EDITOR
- * 
+ *
  * Which editor are we dealing with? PDW File Browser can be used with TinyMCE and CKEditor.
  */
 $editor = isset($_GET["editor"]) ? $_GET["editor"] : 'standalone'; // If you want to use the file browser for both editors and/or standalone
@@ -170,12 +170,12 @@ $editor = isset($_GET["editor"]) ? $_GET["editor"] : 'standalone'; // If you wan
 
 /*
  * UPLOAD SETTINGS
- * 
+ *
  */
 // Maximum file size
 $max_file_size_in_bytes = 20 * 1048576; // 1MB in bytes
 
-// Characters allowed in the file name (in a Regular Expression format)               
+// Characters allowed in the file name (in a Regular Expression format)
 $valid_chars_regex = '.A-Z0-9_!@#$%^&()+={}\[\]\',~`-';
 
 // Allowed file extensions
@@ -187,7 +187,7 @@ $extension_whitelist = "7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpe
 /*
  * RETURN LINKS AS ABSOLUTE OR RELATIVE OR ABSOLUTE WITHOUT HOSTNAME
  *
- * Ex. http://www.example.com/upload/file.jpg instead of /upload/file.jpg 
+ * Ex. http://www.example.com/upload/file.jpg instead of /upload/file.jpg
  */
 $absolute_url = TRUE; // When FALSE url will be returned absolute without hostname, like /upload/file.jpg.
 $absolute_url_disabled = false; // When TRUE changing from absolute to relative is not possible.
