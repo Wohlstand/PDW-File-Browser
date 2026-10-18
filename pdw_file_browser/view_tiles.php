@@ -49,7 +49,7 @@ foreach($dirs as $key => $value){
 			//$file_modified = date($datetimeFormat, filemtime($filename));
 			$file_size = filesize($filename);
 			$file_type = mime_content_type($filename);
-			$file_size = $file_size < 1024  ? $file_size. ' '.translate('bytes') : $file_size < 1048576 ? number_format($file_size / 1024, 2, $dec_seperator, $thousands_separator) . ' '.translate('kB') : number_format($file_size / 1048576, 2, $dec_seperator, $thousands_separator) . ' '.translate('MB');
+			$file_size = $file_size < 1024  ? $file_size. ' '.translate('bytes') : ($file_size < 1048576 ? number_format($file_size / 1024, 2, $dec_seperator, $thousands_separator) . ' '.translate('kB') : number_format($file_size / 1048576, 2, $dec_seperator, $thousands_separator) . ' '.translate('MB'));
 									
 			$htmlFiles .= sprintf('                    <li>
                         <a href="%1$s" title="%2$s" class="file">

@@ -10,7 +10,7 @@
 
 class phpthumb_functions {
 
-	function user_function_exists($functionname) {
+	static function user_function_exists($functionname) {
 		if (function_exists('get_defined_functions')) {
 			static $get_defined_functions = array();
 			if (empty($get_defined_functions)) {
@@ -22,7 +22,7 @@ class phpthumb_functions {
 	}
 
 
-	function builtin_function_exists($functionname) {
+	static function builtin_function_exists($functionname) {
 		if (function_exists('get_defined_functions')) {
 			static $get_defined_functions = array();
 			if (empty($get_defined_functions)) {
@@ -34,7 +34,7 @@ class phpthumb_functions {
 	}
 
 
-	function version_compare_replacement_sub($version1, $version2, $operator='') {
+	static function version_compare_replacement_sub($version1, $version2, $operator='') {
 		// If you specify the third optional operator argument, you can test for a particular relationship.
 		// The possible operators are: <, lt, <=, le, >, gt, >=, ge, ==, =, eq, !=, <>, ne respectively.
 		// Using this argument, the function will return 1 if the relationship is the one specified by the operator, 0 otherwise.
@@ -94,7 +94,7 @@ class phpthumb_functions {
 	}
 
 
-	function version_compare_replacement($version1, $version2, $operator='') {
+	static function version_compare_replacement($version1, $version2, $operator='') {
 		if (function_exists('version_compare')) {
 			// built into PHP v4.1.0+
 			return version_compare($version1, $version2, $operator);
@@ -122,7 +122,7 @@ class phpthumb_functions {
 	}
 
 
-	function phpinfo_array() {
+	static function phpinfo_array() {
 		static $phpinfo_array = array();
 		if (empty($phpinfo_array)) {
 			ob_start();
@@ -135,7 +135,7 @@ class phpthumb_functions {
 	}
 
 
-	function exif_info() {
+	static function exif_info() {
 		static $exif_info = array();
 		if (empty($exif_info)) {
 			// based on code by johnschaefer at gmx dot de
@@ -161,7 +161,7 @@ class phpthumb_functions {
 	}
 
 
-	function ImageTypeToMIMEtype($imagetype) {
+	static function ImageTypeToMIMEtype($imagetype) {
 		if (function_exists('image_type_to_mime_type') && ($imagetype >= 1) && ($imagetype <= 16)) {
 			// PHP v4.3.0+
 			return image_type_to_mime_type($imagetype);
@@ -196,7 +196,7 @@ class phpthumb_functions {
 	}
 
 
-	function TranslateWHbyAngle($width, $height, $angle) {
+	static function TranslateWHbyAngle($width, $height, $angle) {
 		if (($angle % 180) == 0) {
 			return array($width, $height);
 		}
@@ -205,22 +205,22 @@ class phpthumb_functions {
 		return array($newwidth, $newheight);
 	}
 
-	function HexCharDisplay($string) {
+	static function HexCharDisplay($string) {
 		$len = strlen($string);
 		$output = '';
 		for ($i = 0; $i < $len; $i++) {
-			$output .= ' 0x'.str_pad(dechex(ord($string{$i})), 2, '0', STR_PAD_LEFT);
+			$output .= ' 0x'.str_pad(dechex(ord($string[$i])), 2, '0', STR_PAD_LEFT);
 		}
 		return $output;
 	}
 
 
-	function IsHexColor($HexColorString) {
+	static function IsHexColor($HexColorString) {
 		return preg_match('/^[0-9A-F]{6}$/i', $HexColorString);
 	}
 
 
-	function ImageColorAllocateAlphaSafe(&$gdimg_hexcolorallocate, $R, $G, $B, $alpha=false) {
+	static function ImageColorAllocateAlphaSafe(&$gdimg_hexcolorallocate, $R, $G, $B, $alpha=false) {
 		if (phpthumb_functions::version_compare_replacement(phpversion(), '4.3.2', '>=') && ($alpha !== false)) {
 			return ImageColorAllocateAlpha($gdimg_hexcolorallocate, $R, $G, $B, intval($alpha));
 		} else {
@@ -228,8 +228,12 @@ class phpthumb_functions {
 		}
 	}
 
-	function ImageHexColorAllocate(&$gdimg_hexcolorallocate, $HexColorString, $dieOnInvalid=false, $alpha=false) {
-		if (!is_resource($gdimg_hexcolorallocate)) {
+	static function is_gd_image(&$res) {
+		return $res instanceof \GdImage;
+	}
+
+	static function ImageHexColorAllocate(&$gdimg_hexcolorallocate, $HexColorString, $dieOnInvalid=false, $alpha=false) {
+		if (!phpthumb_functions::is_gd_image($gdimg_hexcolorallocate)) {
 			die('$gdimg_hexcolorallocate is not a GD resource in ImageHexColorAllocate()');
 		}
 		if (phpthumb_functions::IsHexColor($HexColorString)) {
@@ -245,20 +249,20 @@ class phpthumb_functions {
 	}
 
 
-	function HexColorXOR($hexcolor) {
+	static function HexColorXOR($hexcolor) {
 		return strtoupper(str_pad(dechex(~hexdec($hexcolor) & 0xFFFFFF), 6, '0', STR_PAD_LEFT));
 	}
 
 
-	function GetPixelColor(&$img, $x, $y) {
-		if (!is_resource($img)) {
+	static function GetPixelColor(&$img, $x, $y) {
+		if (!phpthumb_functions::is_gd_image($img)) {
 			return false;
 		}
 		return @ImageColorsForIndex($img, @ImageColorAt($img, $x, $y));
 	}
 
 
-	function PixelColorDifferencePercent($currentPixel, $targetPixel) {
+	static function PixelColorDifferencePercent($currentPixel, $targetPixel) {
 		$diff = 0;
 		foreach ($targetPixel as $channel => $currentvalue) {
 			$diff = max($diff, (max($currentPixel[$channel], $targetPixel[$channel]) - min($currentPixel[$channel], $targetPixel[$channel])) / 255);
@@ -266,18 +270,18 @@ class phpthumb_functions {
 		return $diff * 100;
 	}
 
-	function GrayscaleValue($r, $g, $b) {
+	static function GrayscaleValue($r, $g, $b) {
 		return round(($r * 0.30) + ($g * 0.59) + ($b * 0.11));
 	}
 
 
-	function GrayscalePixel($OriginalPixel) {
+	static function GrayscalePixel($OriginalPixel) {
 		$gray = phpthumb_functions::GrayscaleValue($OriginalPixel['red'], $OriginalPixel['green'], $OriginalPixel['blue']);
 		return array('red'=>$gray, 'green'=>$gray, 'blue'=>$gray);
 	}
 
 
-	function GrayscalePixelRGB($rgb) {
+	static function GrayscalePixelRGB($rgb) {
 		$r = ($rgb >> 16) & 0xFF;
 		$g = ($rgb >>  8) & 0xFF;
 		$b =  $rgb        & 0xFF;
@@ -285,7 +289,7 @@ class phpthumb_functions {
 	}
 
 
-	function ScaleToFitInBox($width, $height, $maxwidth=null, $maxheight=null, $allow_enlarge=true, $allow_reduce=true) {
+	static function ScaleToFitInBox($width, $height, $maxwidth=null, $maxheight=null, $allow_enlarge=true, $allow_reduce=true) {
 		$maxwidth  = (is_null($maxwidth)  ? $width  : $maxwidth);
 		$maxheight = (is_null($maxheight) ? $height : $maxheight);
 		$scale_x = 1;
@@ -306,7 +310,7 @@ class phpthumb_functions {
 		return $scale;
 	}
 
-	function ImageCopyResampleBicubic($dst_img, $src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h) {
+	static function ImageCopyResampleBicubic($dst_img, $src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h) {
 		// ron at korving dot demon dot nl
 		// http://www.php.net/imagecopyresampled
 
@@ -358,7 +362,7 @@ class phpthumb_functions {
 	}
 
 
-	function ImageCreateFunction($x_size, $y_size) {
+	static function ImageCreateFunction($x_size, $y_size) {
 		$ImageCreateFunction = 'ImageCreate';
 		if (phpthumb_functions::gd_version() >= 2.0) {
 			$ImageCreateFunction = 'ImageCreateTrueColor';
@@ -373,7 +377,7 @@ class phpthumb_functions {
 	}
 
 
-	function ImageCopyRespectAlpha(&$dst_im, &$src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $opacity_pct=100) {
+	static function ImageCopyRespectAlpha(&$dst_im, &$src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $opacity_pct=100) {
 		$opacipct = $opacity_pct / 100;
 		for ($x = $src_x; $x < $src_w; $x++) {
 			for ($y = $src_y; $y < $src_h; $y++) {
@@ -397,7 +401,7 @@ class phpthumb_functions {
 	}
 
 
-	function ProportionalResize($old_width, $old_height, $new_width=false, $new_height=false) {
+	static function ProportionalResize($old_width, $old_height, $new_width=false, $new_height=false) {
 		$old_aspect_ratio = $old_width / $old_height;
 		if (($new_width === false) && ($new_height === false)) {
 			return false;
@@ -420,7 +424,7 @@ class phpthumb_functions {
 	}
 
 
-	function FunctionIsDisabled($function) {
+	static function FunctionIsDisabled($function) {
 		static $DisabledFunctions = null;
 		if (is_null($DisabledFunctions)) {
 			$disable_functions_local  = explode(',',     strtolower(@ini_get('disable_functions')));
@@ -440,7 +444,7 @@ class phpthumb_functions {
 	}
 
 
-	function SafeExec($command) {
+	static function SafeExec($command) {
 		static $AllowedExecFunctions = array();
 		if (empty($AllowedExecFunctions)) {
 			$AllowedExecFunctions = array('shell_exec'=>true, 'passthru'=>true, 'system'=>true, 'exec'=>true);
@@ -481,7 +485,7 @@ class phpthumb_functions {
 	}
 
 
-	function ApacheLookupURIarray($filename) {
+	static function ApacheLookupURIarray($filename) {
 		// apache_lookup_uri() only works when PHP is installed as an Apache module.
 		if (php_sapi_name() == 'apache') {
 			$keys = array('status', 'the_request', 'status_line', 'method', 'content_type', 'handler', 'uri', 'filename', 'path_info', 'args', 'boundary', 'no_cache', 'no_local_copy', 'allowed', 'send_bodyct', 'bytes_sent', 'byterange', 'clength', 'unparsed_uri', 'mtime', 'request_time');
@@ -497,7 +501,7 @@ class phpthumb_functions {
 	}
 
 
-	function gd_is_bundled() {
+	static function gd_is_bundled() {
 		static $isbundled = null;
 		if (is_null($isbundled)) {
 			$gd_info = gd_info();
@@ -507,7 +511,7 @@ class phpthumb_functions {
 	}
 
 
-	function gd_version($fullstring=false) {
+	static function gd_version($fullstring=false) {
 		static $cache_gd_version = array();
 		if (empty($cache_gd_version)) {
 			$gd_info = gd_info();
@@ -523,7 +527,7 @@ class phpthumb_functions {
 	}
 
 
-	function filesize_remote($remotefile, $timeout=10) {
+	static function filesize_remote($remotefile, $timeout=10) {
 		$size = false;
 		$url = phpthumb_functions::ParseURLbetter($remotefile);
 		if ($fp = @fsockopen($url['host'], ($url['port'] ? $url['port'] : 80), $errno, $errstr, $timeout)) {
@@ -544,7 +548,7 @@ class phpthumb_functions {
 	}
 
 
-	function filedate_remote($remotefile, $timeout=10) {
+	static function filedate_remote($remotefile, $timeout=10) {
 		$date = false;
 		$url = phpthumb_functions::ParseURLbetter($remotefile);
 		if ($fp = @fsockopen($url['host'], ($url['port'] ? $url['port'] : 80), $errno, $errstr, $timeout)) {
@@ -565,7 +569,7 @@ class phpthumb_functions {
 	}
 
 
-	function md5_file_safe($filename) {
+	static function md5_file_safe($filename) {
 		// md5_file() doesn't exist in PHP < 4.2.0
 		if (function_exists('md5_file')) {
 			return md5_file($filename);
@@ -583,7 +587,7 @@ class phpthumb_functions {
 	}
 
 
-	function nonempty_min() {
+	static function nonempty_min() {
 		$arg_list = func_get_args();
 		$acceptable = array();
 		foreach ($arg_list as $arg) {
@@ -595,7 +599,7 @@ class phpthumb_functions {
 	}
 
 
-	function LittleEndian2String($number, $minbytes=1) {
+	static function LittleEndian2String($number, $minbytes=1) {
 		$intstring = '';
 		while ($number > 0) {
 			$intstring = $intstring.chr($number & 255);
@@ -604,7 +608,7 @@ class phpthumb_functions {
 		return str_pad($intstring, $minbytes, "\x00", STR_PAD_RIGHT);
 	}
 
-	function OneOfThese() {
+	static function OneOfThese() {
 		// return the first useful (non-empty/non-zero/non-false) value from those passed
 		$arg_list = func_get_args();
 		foreach ($arg_list as $key => $value) {
@@ -615,7 +619,7 @@ class phpthumb_functions {
 		return false;
 	}
 
-	function CaseInsensitiveInArray($needle, $haystack) {
+	static function CaseInsensitiveInArray($needle, $haystack) {
 		$needle = strtolower($needle);
 		foreach ($haystack as $key => $value) {
 			if (is_array($value)) {
@@ -627,7 +631,7 @@ class phpthumb_functions {
 		return false;
 	}
 
-	function URLreadFsock($host, $file, &$errstr, $successonly=true, $port=80, $timeout=10) {
+	static function URLreadFsock($host, $file, &$errstr, $successonly=true, $port=80, $timeout=10) {
 		if (!function_exists('fsockopen') || phpthumb_functions::FunctionIsDisabled('fsockopen')) {
 			$errstr = 'fsockopen() unavailable';
 			return false;
@@ -678,7 +682,7 @@ class phpthumb_functions {
 		return null;
 	}
 
-	function CleanUpURLencoding($url, $queryseperator='&') {
+	static function CleanUpURLencoding($url, $queryseperator='&') {
 		if (!preg_match('/^http/i', $url)) {
 			return $url;
 		}
@@ -715,7 +719,7 @@ class phpthumb_functions {
 		return $cleaned_url;
 	}
 
-	function ParseURLbetter($url) {
+	static function ParseURLbetter($url) {
 		$parsedURL = @parse_url($url);
 		if (!@$parsedURL['port']) {
 			switch (strtolower(@$parsedURL['scheme'])) {
@@ -733,7 +737,7 @@ class phpthumb_functions {
 		return $parsedURL;
 	}
 
-	function SafeURLread($url, &$error, $timeout=10, $followredirects=true) {
+	static function SafeURLread($url, &$error, $timeout=10, $followredirects=true) {
 		$error = '';
 
 		$parsed_url = phpthumb_functions::ParseURLbetter($url);
@@ -816,7 +820,7 @@ class phpthumb_functions {
 		return false;
 	}
 
-	function EnsureDirectoryExists($dirname) {
+	static function EnsureDirectoryExists($dirname) {
 		$directory_elements = explode(DIRECTORY_SEPARATOR, $dirname);
 		$startoffset = (!$directory_elements[0] ? 2 : 1);  // unix with leading "/" then start with 2nd element; Windows with leading "c:\" then start with 1st element
 		$open_basedirs = preg_split('/[;:]/', ini_get('open_basedir'));
@@ -849,7 +853,7 @@ class phpthumb_functions {
 	}
 
 
-	function GetAllFilesInSubfolders($dirname) {
+	static function GetAllFilesInSubfolders($dirname) {
 		$AllFiles = array();
 		$dirname = rtrim(realpath($dirname), '/\\');
 		if ($dirhandle = @opendir($dirname)) {
@@ -882,7 +886,7 @@ class phpthumb_functions {
 	}
 
 
-	function SanitizeFilename($filename) {
+	static function SanitizeFilename($filename) {
 		$filename = preg_replace('/[^'.preg_quote(' !#$%^()+,-.;<>=@[]_{}').'a-zA-Z0-9]/', '_', $filename);
 		if (phpthumb_functions::version_compare_replacement(phpversion(), '4.1.0', '>=')) {
 			$filename = trim($filename, '.');
@@ -984,7 +988,7 @@ if (!function_exists('preg_quote')) {
 		if (empty($preg_quote_array)) {
 			$escapeables = '.\\+*?[^]$(){}=!<>|:';
 			for ($i = 0; $i < strlen($escapeables); $i++) {
-				$strtr_preg_quote[$escapeables{$i}] = $delimiter.$escapeables{$i};
+				$strtr_preg_quote[$escapeables[$i]] = $delimiter.$escapeables[$i];
 			}
 		}
 		return strtr($string, $strtr_preg_quote);

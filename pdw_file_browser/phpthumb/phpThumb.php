@@ -107,6 +107,7 @@ if (@$_GET['phpThumbDebug'] == '0') {
 ////////////////////////////////////////////////////////////////
 
 // returned the fixed string if the evil "magic_quotes_gpc" setting is on
+/* // THIS FUNCTION HAS BEEN REMOVED SINCE PHP 8
 if (get_magic_quotes_gpc()) {
 	// deprecated: 'err', 'file', 'goto',
 	$RequestVarsToStripSlashes = array('src', 'wmf', 'down');
@@ -120,6 +121,7 @@ if (get_magic_quotes_gpc()) {
 		}
 	}
 }
+*/
 
 if (!@$_SERVER['PATH_INFO'] && !@$_SERVER['QUERY_STRING']) {
 	$phpThumb->ErrorImage('phpThumb() v'.$phpThumb->phpthumb_version.'<br><a href="http://phpthumb.sourceforge.net">http://phpthumb.sourceforge.net</a><br><br>ERROR: no parameters specified');

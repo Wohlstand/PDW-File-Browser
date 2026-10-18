@@ -106,9 +106,9 @@ $minifyJS->addFile($jsFiles);
  
 // JAVASCRIPT
 echo '<script type="text/javascript">';
-echo '//<![CDATA[';
+//echo "//<![CDATA[\n";
 echo $minifyJS->combine();
-echo '//]]>';
+//echo "\n'//]]>";
 echo '</script>';
 
 // CSS
