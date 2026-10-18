@@ -381,7 +381,13 @@
 				} 
 				catch(err) 
 				{
-					$.MediaBrowser.showMessage(insert_cancelled);
+				    var vDebug = "";
+                    for(var prop in err)
+                        vDebug += "property: "+ prop+ " value: ["+ err[prop]+ "]\n";
+
+                    vDebug += "toString(): " + " value: [" + err.toString() + "]";
+
+					$.MediaBrowser.showMessage(insert_cancelled + "TinyMCE:  " + vDebug);
 					return;
 				}	
 					
@@ -411,7 +417,7 @@
 					window.opener.CKEDITOR.tools.callFunction(funcNum, URL);
 					window.close();
 				} catch(err) {
-					$.MediaBrowser.showMessage(insert_cancelled);
+					$.MediaBrowser.showMessage(insert_cancelled + "CKeDitor");
                     return;
 				}
 			} 
