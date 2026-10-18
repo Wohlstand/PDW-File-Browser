@@ -16,7 +16,7 @@ require_once('config.php');
  * @return Bool
  */
 function checkFolderName($str){
-	return !( preg_match('#\^|\\\|\/|\.|\?|\*|"|\'|\<|\>|\:|\|#', $str) ? TRUE : FALSE );
+	return !( preg_match('#\^|\\\|\/|\?|\*|"|\'|\<|\>|\:|\|#', $str) ? TRUE : FALSE );
 }
 
 /**
